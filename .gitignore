@@ -1,1 +1,14 @@
 node_modules
+
+# Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
+# Provider lock files
+.terraform.lock.hcl
+
+# Any terraform file
+*.tf
