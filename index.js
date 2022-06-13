@@ -67,6 +67,7 @@ function parseResource(tfPlan, regex) {
 async function prompt(plan) {
   if (isEmpty(plan, 'toDelete')) return;
   const planAfterMove = await pickMove(plan);
+  if (!planAfterMove.continue) return;
   await prompt(planAfterMove);
 }
 
@@ -99,7 +100,7 @@ async function pickMove({ toDelete, toAdd }) {
 
   await shell(`terraform state mv ${from} ${to}`);
 
-  return { toDelete: toDeleteAfterMove, toAdd: toAddAfterMove };
+  return { toDelete: toDeleteAfterMove, toAdd: toAddAfterMove, continue: await isProceed() };
 }
 
 function shell(command, printOutput = true) {
