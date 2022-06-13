@@ -18,6 +18,8 @@ const deleteRegexV11 = /  - ((?!destroy).*)/;
 const addRegexV12 = /  # (.*) will be created/;
 const deleteRegexV12 = /  # (.*) will be destroyed/;
 
+const tfTargets = process.argv.slice(2);
+
 (async function run() {
   try {
     const plan = await parsePlan();
@@ -33,7 +35,12 @@ async function parsePlan() {
   const tfVersion = tfVersionOut.match(tfVersionRegex)[1];
   console.info(chalk.blue(`Runnning on Terraform v${tfVersion}`));
 
-  let tfPlanOut = await shell('terraform plan');
+  let tfTargetsPlain = ''
+  if (tfTargets.length > 0) {
+    tfTargetsPlain = tfTargets.join(' ');
+  }
+
+  let tfPlanOut = await shell(`terraform plan ${tfTargetsPlain}`.trim());
   tfPlanOut = stripAnsi(tfPlanOut);
 
   let addRegex = addRegexV12
