@@ -71,13 +71,13 @@ async function prompt(plan) {
 }
 
 async function isProceed() {
-  const { isProceed } = await inquirer.prompt([{
+  const isProceed = await inquirer.prompt({
     type: 'confirm',
     name: 'isProceed',
     message: 'Move another resource?',
     default: true
-  }]);
-  return isProceed;
+  });
+  return isProceed.isProceed;
 }
 
 async function pickMove({ toDelete, toAdd }) {
