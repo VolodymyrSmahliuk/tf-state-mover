@@ -1,5 +1,7 @@
 # Terraform state move helper
-The list of ideas to work with and future enhancements.
+All notable ideas or future enhancements to this project will be documented in this file.
+
+The format is based on [TODO.md](https://github.com/todomd/todo.md),
 
 ### TODOs
 - [ ] Add new modes(options):
