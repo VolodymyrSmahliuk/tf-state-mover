@@ -1,5 +1,8 @@
 node_modules
 
+# npm packages
+*.tgz
+
 # Local .terraform directories
 **/.terraform/*
 
