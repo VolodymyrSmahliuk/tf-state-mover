@@ -18,6 +18,8 @@ const deleteRegexV11 = /  - ((?!destroy).*)/;
 const addRegexV12 = /  # (.*) will be created/;
 const deleteRegexV12 = /  # (.*) will be destroyed/;
 
+const tfTargets = process.argv.slice(2);
+
 (async function run() {
   try {
     const plan = await parsePlan();
@@ -33,7 +35,12 @@ async function parsePlan() {
   const tfVersion = tfVersionOut.match(tfVersionRegex)[1];
   console.info(chalk.blue(`Runnning on Terraform v${tfVersion}`));
 
-  let tfPlanOut = await shell('terraform plan');
+  let tfTargetsPlain = ''
+  if (tfTargets.length > 0) {
+    tfTargetsPlain = tfTargets.join(' ');
+  }
+
+  let tfPlanOut = await shell(`terraform plan ${tfTargetsPlain}`.trim());
   tfPlanOut = stripAnsi(tfPlanOut);
 
   let addRegex = addRegexV12
@@ -60,17 +67,18 @@ function parseResource(tfPlan, regex) {
 async function prompt(plan) {
   if (isEmpty(plan, 'toDelete')) return;
   const planAfterMove = await pickMove(plan);
+  if (!planAfterMove.continue) return;
   await prompt(planAfterMove);
 }
 
 async function isProceed() {
-  const { isProceed } = await inquirer.prompt([{
+  const isProceed = await inquirer.prompt({
     type: 'confirm',
     name: 'isProceed',
     message: 'Move another resource?',
     default: true
-  }]);
-  return isProceed;
+  });
+  return isProceed.isProceed;
 }
 
 async function pickMove({ toDelete, toAdd }) {
@@ -79,20 +87,20 @@ async function pickMove({ toDelete, toAdd }) {
     name: 'from',
     message: 'Move from',
     choices: toDelete,
-    pageSize: Math.min(toDelete.length, 10)
+    pageSize: Math.min(toDelete.length, 10),
   }, {
     type: 'list',
     name: 'to',
     message: 'Move to  ',
     choices: toAdd,
-    pageSize: Math.min(toAdd.length, 10)
+    pageSize: Math.min(toAdd.length, 10),
   }]);
   const toDeleteAfterMove = _.remove(toDelete, item => item !== from);
   const toAddAfterMove = _.remove(toAdd, item => item !== to);
 
   await shell(`terraform state mv ${from} ${to}`);
 
-  return { toDelete: toDeleteAfterMove, toAdd: toAddAfterMove };
+  return { toDelete: toDeleteAfterMove, toAdd: toAddAfterMove, continue: await isProceed() };
 }
 
 function shell(command, printOutput = true) {
