@@ -87,7 +87,7 @@ async function pickMove({ toDelete, toAdd }) {
     name: 'from',
     message: 'Move from',
     choices: toDelete,
-    pageSize: Math.min(toDelete.length, 10),
+    pageSize: Math.min(toDelete.length, 10)
   }, {
     type: 'list',
     name: 'to',
