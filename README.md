@@ -65,13 +65,13 @@ node <path-to-this-repo>/index.js
 Run state move for the whole Terraform code
 
 ```
-ftmv
+tfmv
 ```
 
 Or use `-target` option
 
 ```
-ftmv -target=module.meaningful_name -target=module.meaningful_name_new
+tfmv -target=module.meaningful_name -target=module.meaningful_name_new
 ```
 
 ![Example of working](docs/gifs/example.gif)
